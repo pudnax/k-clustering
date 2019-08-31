@@ -6,7 +6,7 @@
 use k_clustering::*;
 
 fn main() {
-    let img = image::open("p5.jpg").unwrap();
+    let img = image::open("in.jpg").unwrap();
 
     // let img = img.grayscale();
     let img = img.blur(2.);
