@@ -18,7 +18,7 @@ fn main() {
 ```
 
 <p>
- <img src=./p5.jpg width="200" height="200">
+ <img src=./in.jpg width="200" height="200">
  <img src=./out2.png width="200" height="200">
  <img src=./out3.png width="200" height="200">
 </p>
