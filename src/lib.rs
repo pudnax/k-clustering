@@ -4,26 +4,15 @@ use image::GenericImageView;
 
 pub use cgmath::num_traits::NumCast;
 
-fn main() {
-    let img = image::open("p5.jpg").unwrap();
-
-    // let img = img.grayscale();
-    let img = img.blur(2.);
-
-    let mut kms = KMeansSegmentation::new(img, 37);
-    while (kms.iteration()) > 0 {}
-    kms.overlay_color().save("out2.png").unwrap();
-}
-
-struct KMeansSegmentation {
-    n_clusters: usize,
-    image: image::DynamicImage,
-    mean_colors: Vec<[u8; 3]>,
-    cluster_assignment: Vec<Vec<Option<usize>>>,
+pub struct KMeansSegmentation {
+    pub n_clusters: usize,
+    pub image: image::DynamicImage,
+    pub mean_colors: Vec<[u8; 3]>,
+    pub cluster_assignment: Vec<Vec<Option<usize>>>,
 }
 
 impl KMeansSegmentation {
-    fn new(image: image::DynamicImage, n_clusters: usize) -> KMeansSegmentation {
+    pub fn new(image: image::DynamicImage, n_clusters: usize) -> KMeansSegmentation {
         let mean_colors = vec![[255, 255, 255]; n_clusters];
         let (w, h) = image.dimensions();
         let cluster_assignment = vec![vec![None; h as usize]; w as usize];
@@ -63,7 +52,7 @@ impl KMeansSegmentation {
             .sqrt()
     }
 
-    fn iteration(&mut self) -> usize {
+    pub fn iteration(&mut self) -> usize {
         let mut changed = 0;
         let mut totals = vec![1.; self.n_clusters];
         let mut ctotals = vec![[0., 0., 0.]; self.n_clusters];
@@ -115,7 +104,7 @@ impl KMeansSegmentation {
         changed
     }
 
-    fn overlay(&self) -> image::DynamicImage {
+    pub fn overlay(&self) -> image::DynamicImage {
         let (w, h) = self.image.dimensions();
         // let o = image::ImageBuffer::new(w, h);
         let mut o = image::DynamicImage::new_rgb8(w, h);
@@ -156,7 +145,7 @@ impl KMeansSegmentation {
         o
     }
 
-    fn overlay_color(&self) -> image::DynamicImage {
+    pub fn overlay_color(&self) -> image::DynamicImage {
         let (w, h) = self.image.dimensions();
         let mut o = image::DynamicImage::new_rgb8(w, h);
 
