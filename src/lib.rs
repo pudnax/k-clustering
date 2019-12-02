@@ -34,7 +34,7 @@ impl KMeansSegmentation {
         ((r1 - r2).powi(2) + (g1 - g2).powi(2) + (b1 - b2).powi(2)).sqrt()
     }
 
-    fn cdist2(a: [u8; 3], b: [u8; 3]) -> f64 {
+    fn _cdist2(a: [u8; 3], b: [u8; 3]) -> f64 {
         let r1 = a[0] as f64;
         let g1 = a[1] as f64;
         let b1 = a[2] as f64;
