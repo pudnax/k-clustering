@@ -1,8 +1,6 @@
-extern crate image;
 use image::GenericImage;
 use image::GenericImageView;
-
-pub use cgmath::num_traits::NumCast;
+use num_traits::NumCast;
 
 pub struct KMeansSegmentation {
     pub n_clusters: usize,
@@ -25,22 +23,14 @@ impl KMeansSegmentation {
     }
 
     fn cdist(a: [u8; 3], b: [u8; 3]) -> f64 {
-        let r1 = a[0] as f64;
-        let g1 = a[1] as f64;
-        let b1 = a[2] as f64;
-        let r2 = b[0] as f64;
-        let g2 = b[1] as f64;
-        let b2 = b[2] as f64;
+        let [r1, g1, b1] = a.map(|x| x as f64);
+        let [r2, g2, b2] = b.map(|x| x as f64);
         ((r1 - r2).powi(2) + (g1 - g2).powi(2) + (b1 - b2).powi(2)).sqrt()
     }
 
     fn _cdist2(a: [u8; 3], b: [u8; 3]) -> f64 {
-        let r1 = a[0] as f64;
-        let g1 = a[1] as f64;
-        let b1 = a[2] as f64;
-        let r2 = b[0] as f64;
-        let g2 = b[1] as f64;
-        let b2 = b[2] as f64;
+        let [r1, g1, b1] = a.map(|x| x as f64);
+        let [r2, g2, b2] = b.map(|x| x as f64);
         let rbar = (r1 + r2) / 2.;
         let deltar = r1 - r2;
         let deltag = g1 - g2;
@@ -169,21 +159,21 @@ impl KMeansSegmentation {
 
 pub fn map_range<X, Y>(val: X, in_min: X, in_max: X, out_min: Y, out_max: Y) -> Y
 where
-    X: NumCast,
-    Y: NumCast,
+    X: NumCast + std::fmt::Debug + Copy,
+    Y: NumCast + std::fmt::Debug + Copy,
 {
-    macro_rules! unwrap_or_panic {
-        ($result:expr, $arg:expr) => {
-            $result.unwrap_or_else(|| panic!("[map_range] failed to cast {} arg to `f64`"))
+    macro_rules! cast_or_panic {
+        ($result:expr) => {
+            NumCast::from($result)
+                .unwrap_or_else(|| panic!("[map_range] failed to cast {:?} arg to `f64`", $result))
         };
     }
 
-    let val_f: f64 = unwrap_or_panic!(NumCast::from(val), "first");
-    let in_min_f: f64 = unwrap_or_panic!(NumCast::from(in_min), "second");
-    let in_max_f: f64 = unwrap_or_panic!(NumCast::from(in_max), "third");
-    let out_min_f: f64 = unwrap_or_panic!(NumCast::from(out_min), "fourth");
-    let out_max_f: f64 = unwrap_or_panic!(NumCast::from(out_max), "fifth");
+    let val_f: f64 = cast_or_panic!(val);
+    let in_min_f: f64 = cast_or_panic!(in_min);
+    let in_max_f: f64 = cast_or_panic!(in_max);
+    let out_min_f: f64 = cast_or_panic!(out_min);
+    let out_max_f: f64 = cast_or_panic!(out_max);
 
-    NumCast::from((val_f - in_min_f) / (in_max_f - in_min_f) * (out_max_f - out_min_f) + out_min_f)
-        .unwrap_or_else(|| panic!("[map_range] failed to cast result to target type"))
+    cast_or_panic!((val_f - in_min_f) / (in_max_f - in_min_f) * (out_max_f - out_min_f) + out_min_f)
 }
